@@ -14,6 +14,8 @@ app.secret_key = env.get("APP_SECRET_KEY")
 
 oauth = OAuth(app)
 
+print(env.get("AUTH0_CLIENT_ID"))
+
 oauth.register(
     "auth0",
     client_id=env.get("AUTH0_CLIENT_ID"),
