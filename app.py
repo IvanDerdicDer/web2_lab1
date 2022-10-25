@@ -78,4 +78,4 @@ if __name__ == '__main__':
     if not port:
         port = None
 
-    app.run(host=url, port=port)
+    app.run(host=url, port=port, ssl_context='adhoc')
