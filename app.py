@@ -61,9 +61,15 @@ def logout():
 
 
 if __name__ == '__main__':
-    external_url = env.get("RENDER_EXTERNAL_URL")
-    external_port = env.get('PORT')
+    url = env.get("RENDER_EXTERNAL_URL")
+    port = int(env.get('PORT'))
 
-    print(f'{external_url = } {external_port = }')
+    print(f'{url = } {port = }')
+
+    if not url:
+        url = None
+
+    if not port:
+        port = None
 
     app.run()
