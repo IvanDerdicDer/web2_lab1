@@ -64,7 +64,7 @@ if __name__ == '__main__':
     url = env.get("RENDER_EXTERNAL_URL")
     port = int(env.get('PORT'))
 
-    print(f'{url = } {port = }')
+    print(f'url={url} port={port}')
 
     if not url:
         url = None
