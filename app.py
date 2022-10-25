@@ -80,4 +80,4 @@ if __name__ == '__main__':
     if not port:
         port = None
 
-    app.run(host=url, port=port, ssl_context=('server.cert', 'server.key'))
+    app.run(host=url, port=port)
