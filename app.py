@@ -65,7 +65,7 @@ if __name__ == '__main__':
     port = env.get('PORT')
 
     if url:
-        url = url.split('://')[1]
+        url = '127.0.0.1'
 
     if port:
         port = int(port)
