@@ -3,7 +3,13 @@ from os import environ as env
 from urllib.parse import quote_plus, urlencode
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
-from flask import Flask, redirect, render_template, session, url_for
+from flask import Flask, redirect, render_template, session, url_for, jsonify
+from project_data import *
+from functools import wraps
+
+users, teams, games = get_all_data()
+
+groups = calculate_points(games, teams)
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
@@ -25,6 +31,39 @@ oauth.register(
     },
     server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
 )
+
+
+def authenticate(is_admin: Optional[bool] = None) -> bool:
+    if is_admin is None:
+        return True
+
+    if 'user' not in session:
+        return False
+
+    user_id = session['user']['userinfo']['sub']
+
+    if user_id in users and is_admin == False and users[user_id] == False:
+        return True
+
+    if user_id in users and is_admin == True and users[user_id] == True:
+        return True
+
+    return False
+
+
+def endpoint_auth(is_admin: Optional[bool] = None):
+    def decorate(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            is_auth = authenticate(is_admin)
+            if not is_auth:
+                return jsonify({'message': 'Unauthorised'}), 401
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorate
 
 
 @app.route("/")
@@ -71,8 +110,6 @@ if __name__ == '__main__':
 
     if port:
         port = int(port)
-
-    print(f'url={url} port={port}')
 
     if not url:
         url = None
