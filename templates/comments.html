@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style type="text/css">
+    .tg {
+        border-collapse: collapse;
+        border-color: #aabcfe;
+        border-spacing: 0;
+    }
+
+    .tg td {
+        background-color: #e8edff;
+        border-bottom-width: 1px;
+        border-color: #aabcfe;
+        border-style: solid;
+        border-top-width: 1px;
+        border-width: 0px;
+        color: #669;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        overflow: hidden;
+        padding: 10px 5px;
+        word-break: normal;
+    }
+
+    .tg th {
+        background-color: #b9c9fe;
+        border-bottom-width: 1px;
+        border-color: #aabcfe;
+        border-style: solid;
+        border-top-width: 1px;
+        border-width: 0px;
+        color: #039;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        overflow: hidden;
+        padding: 10px 5px;
+        word-break: normal;
+    }
+
+    .tg .tg-c3ow {
+        border-color: inherit;
+        text-align: center;
+        vertical-align: top
+    }
+
+    .tg .tg-0pky {
+        border-color: inherit;
+        text-align: left;
+        vertical-align: top
+    }
+
+    .tg .tg-0lax {
+        text-align: left;
+        vertical-align: top
+    }
+
+    @media screen and (max-width: 767px) {
+        .tg {
+            width: auto !important;
+        }
+
+        .tg col {
+            width: auto !important;
+        }
+
+        .tg-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+</style>
+<body>
+<p><a href="/">Home</a></p>
+<h1>COMMENT FOR GAME {{ game_id }}</h1>
+
+<div class="tg-wrap">
+    <table class="tg">
+        <thead>
+        <tr>
+            <th class="tg-0pky">Comment</th>
+            <th class="tg-c3ow">User ID</th>
+            <th class="tg-0lax">Creation Datetime</th>
+            {% if commnet and ((is_user and user_id == commnet['user_id']) or is_admin) %}
+                <th class="tg-0lax">Edit Comment</th>
+                <th class="tg-0lax">Delete Comment</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for comment_id, commnet in comments.items() %}
+            <tr>
+                <td class="tg-0pky">{{ commnet['comment'] }}</td>
+                <td class="tg-c3ow">{{ commnet['user_id'] }}</td>
+                <td class="tg-0lax">{{ commnet['create_datetime'] }}</td>
+                {% if commnet and ((is_user and user_id == commnet['user_id']) or is_admin) %}
+                    <td class="tg-0lax"><a href="/edit_comment?comment_id={{ comment_id }}$game_id={{ game_id }}">Edit
+                        comment</a></td>
+
+                    <td class="tg-0lax"><a href="/delete_comment?comment_id={{ comment_id }}$game_id={{ game_id }}"></a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

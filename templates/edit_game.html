@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Games</title>
+</head>
+<body>
+<p><a href="/">Home</a></p>
+<form action="/update_game/{{ game_id }}" method="post">
+    <label for="team_a">Team A: </label>
+    <input type="text" id="team_a" name="team_a" value="{{ game['team_a'] }}">
+    <label for="team_a_score">Team A Score: </label>
+    <input type="number" id="team_a_score" name="team_a_score" value="{{ game['team_a_score'] }}">
+    <label for="team_b">Team B: </label>
+    <input type="text" id="team_b" name="team_b" value="{{ game['team_b'] }}">
+    <label for="team_b_score">Team A: </label>
+    <input type="number" id="team_b_score" name="team_b_score" value="{{ game['team_b_score'] }}">
+    <input type="submit" value="Update">
+</form>
+<p><a href="/delete_game/{{ game_id }}">Delete Game</a></p>
+</body>
+</html>

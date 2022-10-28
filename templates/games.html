@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Games</title>
+</head>
+<style type="text/css">
+    .tg {
+        border-collapse: collapse;
+        border-color: #aabcfe;
+        border-spacing: 0;
+    }
+
+    .tg td {
+        background-color: #e8edff;
+        border-bottom-width: 1px;
+        border-color: #aabcfe;
+        border-style: solid;
+        border-top-width: 1px;
+        border-width: 0px;
+        color: #669;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        overflow: hidden;
+        padding: 10px 5px;
+        word-break: normal;
+    }
+
+    .tg th {
+        background-color: #b9c9fe;
+        border-bottom-width: 1px;
+        border-color: #aabcfe;
+        border-style: solid;
+        border-top-width: 1px;
+        border-width: 0px;
+        color: #039;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        overflow: hidden;
+        padding: 10px 5px;
+        word-break: normal;
+    }
+
+    .tg .tg-baqh {
+        text-align: center;
+        vertical-align: top
+    }
+
+    .tg .tg-c3ow {
+        border-color: inherit;
+        text-align: center;
+        vertical-align: top
+    }
+
+    .tg .tg-0pky {
+        border-color: inherit;
+        text-align: left;
+        vertical-align: top
+    }
+
+    .tg .tg-0lax {
+        text-align: left;
+        vertical-align: top
+    }
+</style>
+<body>
+<p><a href="/">Home</a></p>
+<table class="tg">
+    <thead>
+    <tr>
+        <th class="tg-0pky">Team A</th>
+        <th class="tg-c3ow">Team A Score</th>
+        <th class="tg-0lax">Team B</th>
+        <th class="tg-baqh">Team B Score</th>
+        <th class="tg-0lax">Comments</th>
+        {% if is_admin %}
+            <th class="tg-0lax">Edit</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for game_id, game in games.items() %}
+        <tr id="game_{{ game_id }}">
+            <td class="tg-0pky">{{ game['team_a'] }}</td>
+            <td class="tg-c3ow">{{ game['team_a_score'] }}</td>
+            <td class="tg-0lax">{{ game['team_b'] }}</td>
+            <td class="tg-baqh">{{ game['team_b_score'] }}</td>
+            <td class="tg-baqh"><a href="comments/{{ game_id }}">Game {{ game_id }} Comments</a><br></td>
+            {% if is_admin %}
+                <td class="tg-baqh"><a href="/edit_game/{{ game_id }}">Edit Game {{ game_id }}</a></td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% if is_admin %}
+    <p><a href="/create_game">Create game</a></p>
+{% endif %}
+</body>
+</html>

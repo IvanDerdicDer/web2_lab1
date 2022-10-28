@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Groups</title>
+</head>
+<style type="text/css">
+    .tg {
+        border-collapse: collapse;
+        border-color: #aabcfe;
+        border-spacing: 0;
+    }
+
+    .tg td {
+        background-color: #e8edff;
+        border-bottom-width: 1px;
+        border-color: #aabcfe;
+        border-style: solid;
+        border-top-width: 1px;
+        border-width: 0px;
+        color: #669;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        overflow: hidden;
+        padding: 10px 5px;
+        word-break: normal;
+    }
+
+    .tg th {
+        background-color: #b9c9fe;
+        border-bottom-width: 1px;
+        border-color: #aabcfe;
+        border-style: solid;
+        border-top-width: 1px;
+        border-width: 0px;
+        color: #039;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        overflow: hidden;
+        padding: 10px 5px;
+        word-break: normal;
+    }
+
+    .tg .tg-c3ow {
+        border-color: inherit;
+        text-align: center;
+        vertical-align: top
+    }
+
+    .tg .tg-0pky {
+        border-color: inherit;
+        text-align: left;
+        vertical-align: top
+    }
+
+    @media screen and (max-width: 767px) {
+        .tg {
+            width: auto !important;
+        }
+
+        .tg col {
+            width: auto !important;
+        }
+
+        .tg-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+</style>
+<body>
+<p><a href="/">Home</a></p>
+{% for group, teams in groups.items() %}
+    <div class="tg-wrap" id="group">
+        <h2>GROUP {{ group }}</h2>
+        <table class="tg">
+            <thead>
+            <tr>
+                <th class="tg-0pky">Team</th>
+                <th class="tg-c3ow">Points<br></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for team_name, points in teams.items()|sort(attribute=1, reverse=True) %}
+                <tr>
+                    <td class="tg-0pky">{{ team_name }}</td>
+                    <td class="tg-c3ow">{{ points }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endfor %}
+</body>
+</html>
