@@ -1,10 +1,10 @@
-import json
+from datetime import datetime
 from enum import Enum, auto
 from functools import wraps
-from os import environ as env
-from urllib.parse import quote_plus, urlencode
 from itertools import count
+from os import environ as env
 from typing import Generator
+from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
@@ -24,8 +24,6 @@ app = Flask(__name__)
 app.secret_key = env.get("APP_SECRET_KEY")
 
 oauth = OAuth(app)
-
-print(env.get("AUTH0_CLIENT_ID"))
 
 oauth.register(
     "auth0",
@@ -106,13 +104,18 @@ def home():
 @app.route('/groups')
 @endpoint_auth(AuthSelector.NO_AUTH)
 def groups():
-    return render_template('groups.html', groups=groups_dict)
+    return render_template('groups.html', groups=groups_dict, session=session.get('user'))
 
 
 @app.route('/games')
 @endpoint_auth(AuthSelector.NO_AUTH)
 def games():
-    return render_template('games.html', games=games_dict, is_admin=authenticate(AuthSelector.ADMIN))
+    return render_template(
+        'games.html',
+        games=games_dict,
+        is_admin=authenticate(AuthSelector.ADMIN),
+        session=session.get('user')
+    )
 
 
 @app.route('/edit_game/<game_id>')
@@ -121,13 +124,13 @@ def edit_game(game_id):
     if game_id not in games_dict:
         return 'Game not found'
 
-    return render_template('edit_game.html', game=games_dict[game_id], game_id=game_id)
+    return render_template('edit_game.html', game=games_dict[game_id], game_id=game_id, session=session.get('user'))
 
 
 @app.route('/create_game', methods=['GET'])
 @endpoint_auth(AuthSelector.ADMIN)
 def create_game():
-    return render_template('create_game.html')
+    return render_template('create_game.html', session=session.get('user'))
 
 
 @app.route('/create_game_api', methods=['POST'])
@@ -152,11 +155,9 @@ def create_game_api():
 
     games_dict[game_id] = game
 
-    print(json.dumps(games_dict, ensure_ascii=False, indent=4))
-
     groups_dict = calculate_points(games_dict, teams_dict)
 
-    return render_template('games.html', games=games_dict, is_admin=authenticate(AuthSelector.ADMIN))
+    return redirect('/games')
 
 
 @app.route('/update_game/<game_id>', methods=['POST'])
@@ -175,7 +176,7 @@ def update_game(game_id):
 
     groups_dict = calculate_points(games_dict, teams_dict)
 
-    return render_template('games.html', games=games_dict, is_admin=authenticate(AuthSelector.ADMIN))
+    return redirect('/games')
 
 
 @app.route('/delete_game/<game_id>')
@@ -193,7 +194,7 @@ def delete_game(game_id):
 
     groups_dict = calculate_points(games_dict, teams_dict)
 
-    return render_template('games.html', games=games_dict, is_admin=authenticate(AuthSelector.ADMIN))
+    return redirect('/games')
 
 
 @app.route('/comments/<game_id>')
@@ -212,8 +213,101 @@ def comments(game_id):
         game_id=game_id,
         is_user=authenticate(AuthSelector.USER),
         is_admin=authenticate(AuthSelector.ADMIN),
-        user_id=user_id
+        user_id=user_id,
+        session=session.get('user')
     )
+
+
+@app.route('/write_comment/<game_id>')
+@endpoint_auth(AuthSelector.USER)
+def write_comment(game_id):
+    return render_template('write_comment.html', session=session.get('user'), game_id=game_id)
+
+
+@app.route('/edit_comment', methods=['POST'])
+@endpoint_auth(AuthSelector.USER)
+def edit_comment():
+    comment = request.form.to_dict()
+    game_id = comment.pop('game_id')
+    comment_id = comment.pop('comment_id')
+    is_user = authenticate(AuthSelector.USER)
+
+    if game_id not in comments_dict:
+        return 'Game does not exist.'
+
+    if comment_id not in comments_dict[game_id]:
+        return 'Comment does not exist.'
+
+    if is_user and session['user']['userinfo']['sub'] != comments_dict[game_id][comment_id]['user_id']:
+        return 'Unauthorized.'
+
+    return render_template(
+        'edit_comment.html',
+        session=session.get('user'),
+        comment=comments_dict[game_id][comment_id]['comment'],
+        game_id=game_id,
+        comment_id=comment_id
+    )
+
+
+@app.route('/add_comment', methods=['POST'])
+@endpoint_auth(AuthSelector.USER)
+def add_comment():
+    comment = request.form.to_dict()
+    game_id = comment.pop('game_id')
+    comment['create_datetime'] = str(datetime.utcnow())
+    comment_id = next(comment_id_counter)
+
+    if game_id not in comments_dict:
+        return 'Game does not exist.'
+
+    comments_dict[game_id][comment_id] = comment
+
+    return redirect(f'/comments/{game_id}')
+
+
+@app.route('/update_comment', methods=['POST'])
+@endpoint_auth(AuthSelector.USER_AND_ADMIN)
+def update_comment():
+    comment = request.form.to_dict()
+    game_id = comment.pop('game_id')
+    comment_id = comment.pop('comment_id')
+    is_user = authenticate(AuthSelector.USER)
+
+    if game_id not in comments_dict:
+        return 'Game does not exist.'
+
+    if comment_id not in comments_dict[game_id]:
+        return 'Comment does not exist.'
+
+    if is_user and session['user']['userinfo']['sub'] != comments_dict[game_id][comment_id]['user_id']:
+        return 'Unauthorized.'
+
+    comments_dict[game_id][comment_id]['comment'] = comment['comment']
+
+    return redirect(f'/comments/{game_id}')
+
+
+@app.route('/delete_comment', methods=['POST'])
+@endpoint_auth(AuthSelector.USER_AND_ADMIN)
+def delete_comment():
+    comment = request.form.to_dict()
+    game_id = comment.pop('game_id')
+    comment_id = comment.pop('comment_id')
+    is_user = authenticate(AuthSelector.USER)
+
+    if game_id not in comments_dict:
+        return 'Game does not exist.'
+
+    if comment_id not in comments_dict[game_id]:
+        return 'Comment does not exist.'
+
+    if is_user and session['user']['userinfo']['sub'] != comments_dict[game_id][comment_id]['user_id']:
+        return 'Unauthorized.'
+
+    comments_dict[game_id].pop(comment_id)
+
+    return redirect(f'/comments/{game_id}')
 
 
 @app.route("/login")

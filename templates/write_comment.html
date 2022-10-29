@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% if session %}
+    <h1>User {{ session.userinfo.name }}</h1>
+{% endif %}
+<p><a href="/">Home</a></p>
+<form action="/add_comment" method="post">
+    <input type="hidden" name="user_id" value="{{ session['userinfo']['sub'] }}">
+    <input type="hidden" name="game_id" value="{{ game_id }}">
+    <label for="comment">Comment: </label>
+    <input type="text" name="comment" id="comment"><br>
+    <input type="submit" value="Comment">
+</form>
+</body>
+</html>

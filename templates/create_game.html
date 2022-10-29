@@ -5,6 +5,9 @@
     <title>Games</title>
 </head>
 <body>
+{% if session %}
+    <h1>User {{ session.userinfo.name }}</h1>
+{% endif %}
 <p><a href="/">Home</a></p>
 <form action="/create_game_api" method="post">
     <label for="team_a">Team A: </label>

@@ -65,6 +65,9 @@
     }
 </style>
 <body>
+{% if session %}
+    <h1>User {{ session.userinfo.name }}</h1>
+{% endif %}
 <p><a href="/">Home</a></p>
 <table class="tg">
     <thead>

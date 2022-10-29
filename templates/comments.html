@@ -75,8 +75,11 @@
     }
 </style>
 <body>
+{% if session %}
+    <h1>User {{ session.userinfo.name }}</h1>
+{% endif %}
 <p><a href="/">Home</a></p>
-<h1>COMMENT FOR GAME {{ game_id }}</h1>
+<h1>COMMENTS FOR GAME {{ game_id }}</h1>
 
 <div class="tg-wrap">
     <table class="tg">
@@ -84,11 +87,7 @@
         <tr>
             <th class="tg-0pky">Comment</th>
             <th class="tg-c3ow">User ID</th>
-            <th class="tg-0lax">Creation Datetime</th>
-            {% if commnet and ((is_user and user_id == commnet['user_id']) or is_admin) %}
-                <th class="tg-0lax">Edit Comment</th>
-                <th class="tg-0lax">Delete Comment</th>
-            {% endif %}
+            <th class="tg-0lax">Created Datetime</th>
         </tr>
         </thead>
         <tbody>
@@ -97,11 +96,22 @@
                 <td class="tg-0pky">{{ commnet['comment'] }}</td>
                 <td class="tg-c3ow">{{ commnet['user_id'] }}</td>
                 <td class="tg-0lax">{{ commnet['create_datetime'] }}</td>
+                {% if commnet and (is_user and user_id == commnet['user_id']) %}
+                    <td class="tg-0lax">
+                        <form action="/edit_comment" method="post">
+                            <input type="hidden" name="comment_id" value="{{ comment_id }}">
+                            <input type="hidden" name="game_id" value="{{ game_id }}">
+                            <input type="submit" value="Edit comment">
+                        </form>
+                    </td>
+                {% endif %}
                 {% if commnet and ((is_user and user_id == commnet['user_id']) or is_admin) %}
-                    <td class="tg-0lax"><a href="/edit_comment?comment_id={{ comment_id }}$game_id={{ game_id }}">Edit
-                        comment</a></td>
-
-                    <td class="tg-0lax"><a href="/delete_comment?comment_id={{ comment_id }}$game_id={{ game_id }}"></a>
+                    <td class="tg-0lax">
+                        <form action="/delete_comment" method="post">
+                            <input type="hidden" name="comment_id" value="{{ comment_id }}">
+                            <input type="hidden" name="game_id" value="{{ game_id }}">
+                            <input type="submit" value="Delete comment">
+                        </form>
                     </td>
                 {% endif %}
             </tr>
@@ -109,5 +119,8 @@
         </tbody>
     </table>
 </div>
+{% if is_user %}
+    <p><a href="/write_comment/{{ game_id }}">Write comment</a></p>
+{% endif %}
 </body>
 </html>
