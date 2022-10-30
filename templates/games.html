@@ -76,7 +76,6 @@
         <th class="tg-c3ow">Team A Score</th>
         <th class="tg-0lax">Team B</th>
         <th class="tg-baqh">Team B Score</th>
-        <th class="tg-0lax">Comments</th>
         {% if is_admin %}
             <th class="tg-0lax">Edit</th>
         {% endif %}
@@ -89,7 +88,6 @@
             <td class="tg-c3ow">{{ game['team_a_score'] }}</td>
             <td class="tg-0lax">{{ game['team_b'] }}</td>
             <td class="tg-baqh">{{ game['team_b_score'] }}</td>
-            <td class="tg-baqh"><a href="comments/{{ game_id }}">Game {{ game_id }} Comments</a><br></td>
             {% if is_admin %}
                 <td class="tg-baqh"><a href="/edit_game/{{ game_id }}">Edit Game {{ game_id }}</a></td>
             {% endif %}

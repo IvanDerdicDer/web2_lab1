@@ -79,7 +79,7 @@
     <h1>User {{ session.userinfo.name }}</h1>
 {% endif %}
 <p><a href="/">Home</a></p>
-<h1>COMMENTS FOR GAME {{ game_id }}</h1>
+<h1>COMMENTS FOR GROUP {{ group_id }}</h1>
 
 <div class="tg-wrap">
     <table class="tg">
@@ -100,7 +100,7 @@
                     <td class="tg-0lax">
                         <form action="/edit_comment" method="post">
                             <input type="hidden" name="comment_id" value="{{ comment_id }}">
-                            <input type="hidden" name="game_id" value="{{ game_id }}">
+                            <input type="hidden" name="group_id" value="{{ group_id }}">
                             <input type="submit" value="Edit comment">
                         </form>
                     </td>
@@ -109,7 +109,7 @@
                     <td class="tg-0lax">
                         <form action="/delete_comment" method="post">
                             <input type="hidden" name="comment_id" value="{{ comment_id }}">
-                            <input type="hidden" name="game_id" value="{{ game_id }}">
+                            <input type="hidden" name="group_id" value="{{ group_id }}">
                             <input type="submit" value="Delete comment">
                         </form>
                     </td>
@@ -120,7 +120,7 @@
     </table>
 </div>
 {% if is_user %}
-    <p><a href="/write_comment/{{ game_id }}">Write comment</a></p>
+    <p><a href="/write_comment/{{ group_id }}">Write comment</a></p>
 {% endif %}
 </body>
 </html>
